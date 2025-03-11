@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Camera } from "expo-camera";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import { Ionicons } from "@expo/vector-icons";
 import tw from "../../utils/tw";
 import Container from "../../components/Container";
 import Header from "../../components/Header";
 
 const FoodLoggingCameraScreen = ({ navigation }) => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef(null);
+  const [cameraReady, setCameraReady] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
+  const handleCameraReady = () => {
+    setCameraReady(true);
+  };
 
   const takePicture = async () => {
-    if (cameraRef) {
+    if (cameraRef.current && cameraReady) {
       try {
-        const photo = await cameraRef.takePictureAsync();
+        const photo = await cameraRef.current.takePictureAsync();
         navigation.navigate("FoodLoggingLoading", { photoUri: photo.uri });
       } catch (error) {
         console.error("Error taking picture:", error);
@@ -28,7 +26,7 @@ const FoodLoggingCameraScreen = ({ navigation }) => {
     }
   };
 
-  if (hasPermission === null) {
+  if (!permission) {
     return (
       <Container>
         <View style={tw`flex-1 justify-center items-center`}>
@@ -38,7 +36,7 @@ const FoodLoggingCameraScreen = ({ navigation }) => {
     );
   }
 
-  if (hasPermission === false) {
+  if (!permission.granted) {
     return (
       <Container>
         <View style={tw`flex-1 justify-center items-center px-6`}>
@@ -46,10 +44,16 @@ const FoodLoggingCameraScreen = ({ navigation }) => {
             Camera access is required to use this feature.
           </Text>
           <TouchableOpacity
-            style={tw`bg-primary py-3 px-6 rounded-full`}
+            style={tw`bg-primary py-3 px-6 rounded-full mb-4`}
+            onPress={requestPermission}
+          >
+            <Text style={tw`text-white font-medium`}>Grant Permission</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={tw`py-3 px-6 rounded-full border border-gray-300`}
             onPress={() => navigation.goBack()}
           >
-            <Text style={tw`text-white font-medium`}>Go Back</Text>
+            <Text style={tw`font-medium`}>Go Back</Text>
           </TouchableOpacity>
         </View>
       </Container>
@@ -67,16 +71,25 @@ const FoodLoggingCameraScreen = ({ navigation }) => {
         backButtonColor="white"
       />
 
-      <Camera
+      <CameraView
         style={tw`flex-1`}
-        type={Camera.Constants.Type.back}
-        ref={(ref) => setCameraRef(ref)}
+        facing="back"
+        ref={cameraRef}
+        onCameraReady={handleCameraReady}
       >
         <View style={styles.cameraOverlay}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="close-circle" size={40} color="white" />
+          </TouchableOpacity>
+
           <View style={styles.cameraControls}>
             <TouchableOpacity
               style={styles.captureButton}
               onPress={takePicture}
+              disabled={!cameraReady}
             >
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
@@ -91,7 +104,7 @@ const FoodLoggingCameraScreen = ({ navigation }) => {
             </Text>
           </View>
         </View>
-      </Camera>
+      </CameraView>
     </View>
   );
 };
@@ -101,6 +114,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
     justifyContent: "flex-end",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    zIndex: 10,
+    padding: 5,
   },
   cameraControls: {
     alignItems: "center",

@@ -27,6 +27,16 @@ import WorkoutLoggingScreen from "../screens/main/WorkoutLoggingScreen";
 import ProgressTrackerDateSelectionScreen from "../screens/main/ProgressTrackerDateSelectionScreen";
 import ProgressTrackerDailyLogViewScreen from "../screens/main/ProgressTrackerDailyLogViewScreen";
 
+// Food Scan Screens
+import FoodScanCameraScreen from "../screens/main/FoodScanCameraScreen";
+import FoodScanLoadingScreen from "../screens/main/FoodScanLoadingScreen";
+import FoodScanResultsScreen from "../screens/main/FoodScanResultsScreen";
+
+// New Body Scan Screens
+import BodyScanCameraScreen from "../screens/main/BodyScanCameraScreen";
+import BodyScanLoadingScreen from "../screens/main/BodyScanLoadingScreen";
+import BodyScanResultsScreen from "../screens/main/BodyScanResultsScreen";
+
 // Create stack navigators
 const AuthStack = createStackNavigator();
 const OnboardingStack = createStackNavigator();
@@ -67,6 +77,8 @@ const OnboardingNavigator = () => (
 const MainNavigator = () => (
   <MainStack.Navigator screenOptions={{ headerShown: false }}>
     <MainStack.Screen name="Dashboard" component={DashboardScreen} />
+
+    {/* Food Logging Flow */}
     <MainStack.Screen
       name="FoodLoggingChooseMethod"
       component={FoodLoggingChooseMethodScreen}
@@ -91,6 +103,30 @@ const MainNavigator = () => (
       name="FoodLoggingManualEntry"
       component={FoodLoggingManualEntryScreen}
     />
+
+    {/* Food Scan Flow */}
+    <MainStack.Screen name="FoodScanCamera" component={FoodScanCameraScreen} />
+    <MainStack.Screen
+      name="FoodScanLoading"
+      component={FoodScanLoadingScreen}
+    />
+    <MainStack.Screen
+      name="FoodScanResults"
+      component={FoodScanResultsScreen}
+    />
+
+    {/* Body Scan Flow */}
+    <MainStack.Screen name="BodyScanCamera" component={BodyScanCameraScreen} />
+    <MainStack.Screen
+      name="BodyScanLoading"
+      component={BodyScanLoadingScreen}
+    />
+    <MainStack.Screen
+      name="BodyScanResults"
+      component={BodyScanResultsScreen}
+    />
+
+    {/* Other Screens */}
     <MainStack.Screen name="WorkoutLogging" component={WorkoutLoggingScreen} />
     <MainStack.Screen
       name="ProgressTrackerDateSelection"

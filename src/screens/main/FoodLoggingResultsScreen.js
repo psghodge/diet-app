@@ -32,6 +32,11 @@ const FoodLoggingResultsScreen = ({ route, navigation }) => {
     });
   };
 
+  const handleDiscard = () => {
+    // Navigate back to the dashboard without saving
+    navigation.navigate("Dashboard");
+  };
+
   const handleEdit = () => {
     navigation.navigate("FoodLoggingEdit", {
       photoUri,
@@ -109,10 +114,17 @@ const FoodLoggingResultsScreen = ({ route, navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={[styles.button, styles.discardButton]}
+          onPress={handleDiscard}
+        >
+          <Text style={styles.discardButtonText}>Discard</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.button, styles.saveButton]}
           onPress={handleSave}
         >
-          <Text style={styles.saveButtonText}>Save to Log</Text>
+          <Text style={styles.saveButtonText}>Log</Text>
         </TouchableOpacity>
       </View>
     </Container>
@@ -187,9 +199,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 8,
   },
+  discardButton: {
+    backgroundColor: "#FEF2F2",
+    marginRight: 12,
+    flex: 1,
+  },
+  discardButtonText: {
+    color: "#EF4444",
+    fontWeight: "600",
+  },
   saveButton: {
     backgroundColor: "#3B82F6",
-    flex: 2,
+    flex: 1,
   },
   saveButtonText: {
     color: "#fff",
